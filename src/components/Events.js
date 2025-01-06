@@ -4,11 +4,15 @@ import { motion } from 'framer-motion';
 
 const EventsContainer = styled.div`
   min-height: 100vh;
-  padding: 4rem 2rem;
+  padding: 4rem 1rem;
   background: #000000;
   color: #C0A080;
   position: relative;
   overflow: hidden;
+
+  @media (max-width: 768px) {
+    padding: 2rem 0.5rem;
+  }
 
   &::before {
     content: '';
@@ -32,6 +36,18 @@ const Title = styled.h1`
   position: relative;
   text-shadow: 0 0 20px rgba(192, 160, 128, 0.3);
   
+  @media (max-width: 768px) {
+    font-size: 2.5rem;
+    margin-bottom: 2.5rem;
+    letter-spacing: 0.15em;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    letter-spacing: 0.1em;
+  }
+  
   &::after {
     content: '';
     position: absolute;
@@ -46,6 +62,16 @@ const Title = styled.h1`
       #C0A080,
       transparent
     );
+
+    @media (max-width: 768px) {
+      width: 150px;
+      bottom: -15px;
+    }
+
+    @media (max-width: 480px) {
+      width: 100px;
+      bottom: -10px;
+    }
   }
 `;
 
@@ -57,6 +83,18 @@ const EventsGrid = styled.div`
   margin: 0 auto;
   position: relative;
   z-index: 1;
+  padding: 0 1rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    padding: 0 0.5rem;
+  }
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
 `;
 
 const ImageWrapper = styled.div`
@@ -73,6 +111,16 @@ const ImageWrapper = styled.div`
     rgba(192, 160, 128, 0.2),
     rgba(97, 78, 26, 0.2)
   );
+
+  @media (max-width: 768px) {
+    height: 180px;
+    margin-bottom: 1.5rem;
+  }
+
+  @media (max-width: 480px) {
+    height: 160px;
+    margin-bottom: 1rem;
+  }
 
   &::before {
     content: '';
@@ -135,9 +183,9 @@ const EventCard = styled(motion.div)`
   border: 2px solid;
   border-image: linear-gradient(
     45deg,
-    #C0A080,
-    transparent,
-    #614E1A
+    rgba(192, 160, 128, 0.8),
+    rgba(192, 160, 128, 0.2),
+    rgba(97, 78, 26, 0.8)
   ) 1;
   padding: 2rem;
   text-align: center;
@@ -146,32 +194,32 @@ const EventCard = styled(motion.div)`
   transform-style: preserve-3d;
   perspective: 1000px;
   cursor: pointer;
-  box-shadow: 
-    0 0 20px rgba(192, 160, 128, 0.1),
-    inset 0 0 20px rgba(192, 160, 128, 0.1);
+  animation: cardGlow 3s ease-in-out infinite alternate;
+
+  @keyframes cardGlow {
+    from {
+      box-shadow: 
+        0 0 30px rgba(192, 160, 128, 0.3),
+        inset 0 0 30px rgba(192, 160, 128, 0.2),
+        0 0 50px rgba(192, 160, 128, 0.1),
+        0 0 70px rgba(97, 78, 26, 0.1);
+    }
+    to {
+      box-shadow: 
+        0 0 40px rgba(192, 160, 128, 0.4),
+        inset 0 0 40px rgba(192, 160, 128, 0.3),
+        0 0 60px rgba(192, 160, 128, 0.2),
+        0 0 80px rgba(97, 78, 26, 0.2);
+    }
+  }
 
   &::before {
     content: '';
     position: absolute;
     inset: 0;
     background: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23C0A080' fill-opacity='0.05'%3E%3Cpath d='M20 0L0 20h5l15-15 15 15h5M40 20L20 40v-5l15-15-15-15v-5'/%3E%3C/g%3E%3C/svg%3E");
-    opacity: 0.1;
+    opacity: 0.15;
     z-index: 0;
-  }
-
-  &::after {
-    content: '';
-    position: absolute;
-    inset: -200%;
-    background: linear-gradient(
-      45deg,
-      transparent,
-      rgba(192, 160, 128, 0.2),
-      transparent 60%
-    );
-    transition: transform 0.5s ease;
-    pointer-events: none;
-    z-index: 2;
   }
 
   h2 {
@@ -182,10 +230,10 @@ const EventCard = styled(motion.div)`
     letter-spacing: 0.15em;
     position: relative;
     text-shadow: 
-      0 0 20px rgba(192, 160, 128, 0.3),
-      0 0 40px rgba(192, 160, 128, 0.2);
+      0 0 30px rgba(192, 160, 128, 0.4),
+      0 0 60px rgba(192, 160, 128, 0.3),
+      0 0 90px rgba(192, 160, 128, 0.2);
     transform: translateZ(20px);
-    transition: all 0.3s ease;
     background: linear-gradient(
       45deg,
       #C0A080,
@@ -218,6 +266,28 @@ const EventCard = styled(motion.div)`
         #C0A080,
         transparent
       );
+      animation: borderGlow 3s ease-in-out infinite alternate;
+
+      @keyframes borderGlow {
+        from {
+          opacity: 0.5;
+          width: 50%;
+        }
+        to {
+          opacity: 1;
+          width: 70%;
+        }
+      }
+    }
+
+    @media (max-width: 768px) {
+      font-size: 1.8rem;
+      margin-bottom: 1.2rem;
+    }
+
+    @media (max-width: 480px) {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
     }
   }
   
@@ -230,34 +300,41 @@ const EventCard = styled(motion.div)`
     position: relative;
     z-index: 1;
     transform: translateZ(10px);
-    transition: transform 0.3s ease;
+    text-shadow: 0 0 20px rgba(192, 160, 128, 0.2);
+
+    @media (max-width: 768px) {
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 480px) {
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
   }
 
-  &:hover {
-    box-shadow: 
-      0 0 30px rgba(192, 160, 128, 0.2),
-      inset 0 0 30px rgba(192, 160, 128, 0.2);
+  @media (max-width: 768px) {
+    padding: 1.5rem;
+    animation: cardGlowMobile 3s ease-in-out infinite alternate;
 
-    ${ImageWrapper} {
-      img {
-        transform: scale(1.1);
+    @keyframes cardGlowMobile {
+      from {
+        box-shadow: 
+          0 0 20px rgba(192, 160, 128, 0.2),
+          inset 0 0 20px rgba(192, 160, 128, 0.1),
+          0 0 30px rgba(192, 160, 128, 0.1);
+      }
+      to {
+        box-shadow: 
+          0 0 25px rgba(192, 160, 128, 0.3),
+          inset 0 0 25px rgba(192, 160, 128, 0.2),
+          0 0 35px rgba(192, 160, 128, 0.15);
       }
     }
-    
-    &::before {
-      opacity: 0.15;
-      transition: opacity 0.3s ease;
-    }
+  }
 
-    &::after {
-      transform: translateX(50%);
-    }
-
-    h2 {
-      text-shadow: 
-        0 0 30px rgba(192, 160, 128, 0.4),
-        0 0 60px rgba(192, 160, 128, 0.3);
-    }
+  @media (max-width: 480px) {
+    padding: 1rem;
   }
 `;
 
@@ -309,6 +386,9 @@ const cardVariants = {
 
 function Events() {
   const handleMouseMove = (e, card) => {
+    // Disable tilt effect on mobile devices
+    if (window.innerWidth <= 768) return;
+    
     const rect = card.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
@@ -323,6 +403,7 @@ function Events() {
   };
 
   const handleMouseLeave = (card) => {
+    if (window.innerWidth <= 768) return;
     card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0)';
   };
 
