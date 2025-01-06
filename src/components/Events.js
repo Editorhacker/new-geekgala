@@ -1,6 +1,14 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import styled from 'styled-components';
-import { motion } from 'framer-motion';
+import {
+  motion,
+  useMotionTemplate,
+  useMotionValue,
+  useSpring,
+} from "framer-motion";
+
+const ROTATION_RANGE = 32.5;
+const HALF_ROTATION_RANGE = 32.5 / 2;
 
 const EventsContainer = styled.div`
   min-height: 100vh;
@@ -177,15 +185,15 @@ const ShineEffect = styled.div`
 const EventCard = styled(motion.div)`
   background: linear-gradient(
     135deg,
-    rgba(30, 20, 10, 0.95),
-    rgba(60, 40, 20, 0.85)
+    rgba(44, 30, 12, 0.95),
+    rgba(77, 55, 25, 0.90)
   );
   border: 2px solid;
   border-image: linear-gradient(
     45deg,
-    rgba(192, 160, 128, 0.8),
-    rgba(192, 160, 128, 0.2),
-    rgba(97, 78, 26, 0.8)
+    #FFD700,
+    rgba(255, 215, 0, 0.2),
+    #DAA520
   ) 1;
   padding: 2rem;
   text-align: center;
@@ -194,63 +202,51 @@ const EventCard = styled(motion.div)`
   transform-style: preserve-3d;
   perspective: 1000px;
   cursor: pointer;
-  animation: cardGlow 3s ease-in-out infinite alternate;
+  will-change: transform;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
-  @keyframes cardGlow {
-    from {
-      box-shadow: 
-        0 0 30px rgba(192, 160, 128, 0.3),
-        inset 0 0 30px rgba(192, 160, 128, 0.2),
-        0 0 50px rgba(192, 160, 128, 0.1),
-        0 0 70px rgba(97, 78, 26, 0.1);
-    }
-    to {
-      box-shadow: 
-        0 0 40px rgba(192, 160, 128, 0.4),
-        inset 0 0 40px rgba(192, 160, 128, 0.3),
-        0 0 60px rgba(192, 160, 128, 0.2),
-        0 0 80px rgba(97, 78, 26, 0.2);
-    }
-  }
-
-  &::before {
+  &::after {
     content: '';
     position: absolute;
     inset: 0;
-    background: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23C0A080' fill-opacity='0.05'%3E%3Cpath d='M20 0L0 20h5l15-15 15 15h5M40 20L20 40v-5l15-15-15-15v-5'/%3E%3C/g%3E%3C/svg%3E");
-    opacity: 0.15;
-    z-index: 0;
+    background: radial-gradient(
+      circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+      rgba(255, 215, 0, 0.15),
+      transparent 70%
+    );
+    opacity: 0;
+    animation: glowPulse 4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    pointer-events: none;
+    z-index: 1;
+    will-change: opacity, transform;
+  }
+
+  .card-content {
+    position: relative;
+    width: 100%;
+    transform-style: preserve-3d;
+    z-index: 2;
   }
 
   h2 {
-    color: #C0A080;
-    font-size: 2.2rem;
-    margin-bottom: 1.5rem;
+    color: #FFD700;
+    font-size: clamp(1.5rem, 4vw, 2.2rem);
+    margin-bottom: clamp(1rem, 3vw, 1.5rem);
     font-family: 'Cinzel', serif;
     letter-spacing: 0.15em;
     position: relative;
-    text-shadow: 
-      0 0 30px rgba(192, 160, 128, 0.4),
-      0 0 60px rgba(192, 160, 128, 0.3),
-      0 0 90px rgba(192, 160, 128, 0.2);
-    transform: translateZ(20px);
+    text-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+    transform-style: preserve-3d;
+    
     background: linear-gradient(
       45deg,
-      #C0A080,
-      #614E1A,
-      #C0A080
+      #FFD700,
+      #DAA520,
+      #FFD700
     );
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
-    background-size: 200% auto;
-    animation: shine-text 3s linear infinite;
-
-    @keyframes shine-text {
-      to {
-        background-position: 200% center;
-      }
-    }
     
     &::after {
       content: '';
@@ -263,78 +259,33 @@ const EventCard = styled(motion.div)`
       background: linear-gradient(
         90deg,
         transparent,
-        #C0A080,
+        #FFD700,
         transparent
       );
-      animation: borderGlow 3s ease-in-out infinite alternate;
-
-      @keyframes borderGlow {
-        from {
-          opacity: 0.5;
-          width: 50%;
-        }
-        to {
-          opacity: 1;
-          width: 70%;
-        }
-      }
-    }
-
-    @media (max-width: 768px) {
-      font-size: 1.8rem;
-      margin-bottom: 1.2rem;
-    }
-
-    @media (max-width: 480px) {
-      font-size: 1.5rem;
-      margin-bottom: 1rem;
+      opacity: 0.8;
     }
   }
   
   p {
-    color: rgba(192, 160, 128, 0.9);
-    font-size: 1.1rem;
+    color: rgba(255, 223, 0, 0.9);
+    font-size: clamp(0.9rem, 2vw, 1.1rem);
     line-height: 1.8;
     font-family: 'Cinzel', serif;
     letter-spacing: 0.05em;
     position: relative;
     z-index: 1;
-    transform: translateZ(10px);
-    text-shadow: 0 0 20px rgba(192, 160, 128, 0.2);
-
-    @media (max-width: 768px) {
-      font-size: 1rem;
-      line-height: 1.6;
-    }
-
-    @media (max-width: 480px) {
-      font-size: 0.9rem;
-      line-height: 1.5;
-    }
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
+    transform-style: preserve-3d;
   }
 
-  @media (max-width: 768px) {
-    padding: 1.5rem;
-    animation: cardGlowMobile 3s ease-in-out infinite alternate;
-
-    @keyframes cardGlowMobile {
-      from {
-        box-shadow: 
-          0 0 20px rgba(192, 160, 128, 0.2),
-          inset 0 0 20px rgba(192, 160, 128, 0.1),
-          0 0 30px rgba(192, 160, 128, 0.1);
-      }
-      to {
-        box-shadow: 
-          0 0 25px rgba(192, 160, 128, 0.3),
-          inset 0 0 25px rgba(192, 160, 128, 0.2),
-          0 0 35px rgba(192, 160, 128, 0.15);
-      }
+  @media (prefers-reduced-motion: reduce) {
+    transform: none !important;
+    transition: none !important;
+    
+    * {
+      transform: none !important;
+      transition: none !important;
     }
-  }
-
-  @media (max-width: 480px) {
-    padding: 1rem;
   }
 `;
 
@@ -365,70 +316,77 @@ const events = [
   }
 ];
 
-const cardVariants = {
-  hidden: { 
-    opacity: 0,
-    y: 50,
-    scale: 0.9
-  },
-  visible: (i) => ({ 
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: {
-      delay: i * 0.2,
-      duration: 0.8,
-      type: "spring",
-      damping: 12
-    }
-  })
+const TiltCard = ({ event }) => {
+  const ref = useRef(null);
+
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+
+  const xSpring = useSpring(x);
+  const ySpring = useSpring(y);
+
+  const transform = useMotionTemplate`perspective(1000px) rotateX(${xSpring}deg) rotateY(${ySpring}deg)`;
+
+  const handleMouseMove = (e) => {
+    if (!ref.current) return;
+
+    const rect = ref.current.getBoundingClientRect();
+    const width = rect.width;
+    const height = rect.height;
+
+    const mouseX = (e.clientX - rect.left) * ROTATION_RANGE;
+    const mouseY = (e.clientY - rect.top) * ROTATION_RANGE;
+
+    const rX = (mouseY / height - HALF_ROTATION_RANGE) * -1;
+    const rY = mouseX / width - HALF_ROTATION_RANGE;
+
+    // Update CSS variables for the glow effect
+    const mouseXPercent = ((e.clientX - rect.left) / width) * 100;
+    const mouseYPercent = ((e.clientY - rect.top) / height) * 100;
+    ref.current.style.setProperty('--mouse-x', `${mouseXPercent}%`);
+    ref.current.style.setProperty('--mouse-y', `${mouseYPercent}%`);
+
+    x.set(rX);
+    y.set(rY);
+  };
+
+  const handleMouseLeave = () => {
+    x.set(0);
+    y.set(0);
+  };
+
+  return (
+    <EventCard
+      ref={ref}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      style={{
+        transformStyle: "preserve-3d",
+        transform,
+      }}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <div className="card-content" style={{ transform: "translateZ(50px)" }}>
+        <ImageWrapper style={{ transform: "translateZ(75px)" }}>
+          <img src={event.image} alt={event.name} />
+          <ShineEffect />
+        </ImageWrapper>
+        <h2 style={{ transform: "translateZ(60px)" }}>{event.name}</h2>
+        <p style={{ transform: "translateZ(40px)" }}>{event.description}</p>
+      </div>
+    </EventCard>
+  );
 };
 
 function Events() {
-  const handleMouseMove = (e, card) => {
-    // Disable tilt effect on mobile devices
-    if (window.innerWidth <= 768) return;
-    
-    const rect = card.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
-    
-    const rotateX = (y - centerY) / 20;
-    const rotateY = (centerX - x) / 20;
-    
-    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-  };
-
-  const handleMouseLeave = (card) => {
-    if (window.innerWidth <= 768) return;
-    card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0)';
-  };
-
   return (
     <EventsContainer>
       <Title>Ancient Trials</Title>
       <EventsGrid>
         {events.map((event, index) => (
-          <EventCard
-            key={event.id}
-            variants={cardVariants}
-            initial="hidden"
-            animate="visible"
-            custom={index}
-            whileHover={{ scale: 1.02 }}
-            onMouseMove={(e) => handleMouseMove(e, e.currentTarget)}
-            onMouseLeave={(e) => handleMouseLeave(e.currentTarget)}
-          >
-            <ImageWrapper>
-              <img src={event.image} alt={event.name} />
-              <ShineEffect />
-            </ImageWrapper>
-            <h2>{event.name}</h2>
-            <p>{event.description}</p>
-          </EventCard>
+          <TiltCard key={index} event={event} />
         ))}
       </EventsGrid>
     </EventsContainer>
