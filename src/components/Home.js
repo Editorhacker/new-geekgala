@@ -194,7 +194,7 @@ const letterVariants = {
 
 function Home() {
   const navigate = useNavigate();
-  const title = "Geek  Gala";
+  const title = "Geeks  Gala";
   
   const symbols = [
     { size: 80, left: '10%', top: '20%', delay: 0 },
